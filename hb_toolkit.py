@@ -27,10 +27,10 @@ requests.packages.urllib3.disable_warnings()
 
 class Eligible:
 
-    def __init__(self):
+    def __init__(self, profile_type):
         self.api_url = hb_config.apiurl
         self.settings = hb_output_settings.Params()
-        self.output_params = self.settings.getParams("th_invites")
+        self.output_params = self.settings.getParams(profile_type)
              
     def getLatestEditDate(self, user_name):
         """

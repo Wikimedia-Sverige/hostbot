@@ -59,7 +59,7 @@ def inviteGuests(prof, message_text, inviter):
 if __name__ == "__main__":
     param = hb_output_settings.Params()
     params = param.getParams(sys.argv[1])
-    elig_check = hb_toolkit.Eligible()
+    elig_check = hb_toolkit.Eligible(sys.argv[1])
     
     daily_sample = hb_profiles.Samples()
     daily_sample.insertInvitees("teahouse experiment newbies") #need to generalize for TWA too
