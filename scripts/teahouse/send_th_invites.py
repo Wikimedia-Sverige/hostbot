@@ -14,12 +14,14 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 import hb_toolkit
 import hb_output_settings
 import hb_profiles
 import random
-import sys
 
 def getEligibleInviters(elig_check, potential_inviters):
     eligible_inviters = [x for x in potential_inviters if elig_check.determineInviterEligibility(x, 21)]
