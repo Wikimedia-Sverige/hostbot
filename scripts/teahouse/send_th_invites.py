@@ -82,8 +82,8 @@ if __name__ == "__main__":
 #     print skipped_editors
     for i in invitees:
         profile = runSample(i, random.choice(inviters), random.choice(params['messages']), params)
-        daily_sample.updateOneRow("update th invite status", [profile.message[0], int(profile.invited), int(profile.skip), profile.user_id]) 
+        daily_sample.updateOneRow("update th invite status", [int(profile.invited), int(profile.skip), profile.user_id])
     for s in skipped_editors:
-        daily_sample.updateOneRow("update th invite status", [profile.message[0], 0, 1, s[1]])         
+        daily_sample.updateOneRow("update th invite status", [0, 1, s[1]])
 
     daily_sample.updateTalkPages("th add talkpage") #need to generalize for TWA too

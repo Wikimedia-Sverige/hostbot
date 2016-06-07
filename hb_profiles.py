@@ -35,14 +35,14 @@ class Samples:
         Set up the db connection.
         """
         self.conn = MySQLdb.connect(
-        host = hb_config.host, 
-        db = hb_config.dbname, 
-        read_default_file = hb_config.defaultcnf, 
-        use_unicode=1, 
-        charset="utf8"
-            )
-        self.cursor = self.conn.cursor()        
-        self.queries = hb_queries.Query()        
+            host = hb_config.host,
+            db = hb_config.dbname,
+            read_default_file = hb_config.defaultcnf,
+            use_unicode=1,
+            charset="utf8")
+        self.cursor = self.conn.cursor()
+        self.queries = hb_queries.Query(hb_config.wikidb,
+                                        hb_config.invitee_table)
 
     def insertInvitees(self, query_key):
         """
