@@ -18,6 +18,7 @@
 from datetime import datetime, timedelta
 import dateutil.parser
 import hb_output_settings
+import hb_config
 import requests
 import sys
 import requests.packages.urllib3
@@ -27,7 +28,7 @@ requests.packages.urllib3.disable_warnings()
 class Eligible:
 
     def __init__(self):
-        self.api_url = "https://en.wikipedia.org/w/api.php/"
+        self.api_url = hb_config.apiurl
         self.settings = hb_output_settings.Params()
         self.output_params = self.settings.getParams("th_invites")
              
