@@ -24,6 +24,7 @@ import hb_profiles
 import random
 
 def getEligibleInviters(elig_check, potential_inviters):
+    """Filter out inviters with no edits in the last 21 days."""
     eligible_inviters = [x for x in potential_inviters if elig_check.determineInviterEligibility(x, 21)]
     return eligible_inviters
 
@@ -61,7 +62,7 @@ def inviteGuests(prof, message_text, inviter):
 if __name__ == "__main__":
     param = hb_output_settings.Params()
     params = param.getParams(sys.argv[1])
-    elig_check = hb_toolkit.Eligible(sys.argv[1])
+    elig_check = hb_toolkit.Eligible(params)
     
     daily_sample = hb_profiles.Samples()
     daily_sample.insertInvitees("teahouse experiment newbies") #need to generalize for TWA too

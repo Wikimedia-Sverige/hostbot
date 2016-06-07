@@ -27,10 +27,9 @@ requests.packages.urllib3.disable_warnings()
 
 class Eligible:
 
-    def __init__(self, profile_type):
+    def __init__(self, params):
         self.api_url = hb_config.apiurl
-        self.settings = hb_output_settings.Params()
-        self.output_params = self.settings.getParams(profile_type)
+        self.output_params = params
              
     def getLatestEditDate(self, user_name):
         """
@@ -53,8 +52,12 @@ class Eligible:
         api_req = requests.get(self.api_url, params=parameters)
         # print api_req.url
         api_data = api_req.json()
-        edit_timestamp = api_data["query"]["usercontribs"][0]["timestamp"]
-        latest_edit_date = dateutil.parser.parse(edit_timestamp, ignoretz=True).date()
+        try:
+            edit_timestamp = api_data["query"]["usercontribs"][0]["timestamp"]
+            latest_edit_date = dateutil.parser.parse(edit_timestamp, ignoretz=True).date()
+        except IndexError:
+            print "The user {user:s} has not made any edits and should not be an inviter!".format(user=user_name)
+            raise
         return latest_edit_date
 
     def getBlockStatus(self, user_name):
