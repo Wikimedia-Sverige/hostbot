@@ -1,6 +1,6 @@
 #! /usr/bin/python2.7
 
-# Copyright 2013 Jtmorgan
+# Copyright 2013, 2016 Jtmorgan, Lokal_Profil
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
