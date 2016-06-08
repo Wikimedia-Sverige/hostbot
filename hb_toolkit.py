@@ -175,7 +175,7 @@ if __name__ == "__main__":
     param = hb_output_settings.Params()
     params = param.getParams(sys.argv[1]) #what type of invites
     sub_date = int(sys.argv[2]) #numeric threshold (days ago)
-    e = Eligible()
+    e = Eligible(params)
     potential_inviters = params['inviters'] 
     eligible_inviters = [x for x in potential_inviters if e.determineInviterEligibility(x, sub_date)]
     print potential_inviters
