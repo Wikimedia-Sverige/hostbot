@@ -56,6 +56,8 @@ class Eligible:
             edit_timestamp = api_data["query"]["usercontribs"][0]["timestamp"]
             latest_edit_date = dateutil.parser.parse(edit_timestamp, ignoretz=True).date()
         except IndexError:
+            # TODO raise a different error which determineInviterEligibility()
+            # can except for more clarity.
             print "The user {user:s} has not made any edits and should not be an inviter!".format(user=user_name)
             raise
         return latest_edit_date
@@ -101,7 +103,10 @@ class Eligible:
         """
         is_eligible = False
         is_blocked = self.getBlockStatus(inviter)
-        latest_edit_date = self.getLatestEditDate(inviter)
+        try:
+            latest_edit_date = self.getLatestEditDate(inviter)
+        except IndexError:
+            return False
         is_active = self.meetsEditDateThreshold(latest_edit_date, threshold)
         if is_active and not is_blocked:
             is_eligible = True
@@ -175,8 +180,3 @@ if __name__ == "__main__":
     eligible_inviters = [x for x in potential_inviters if e.determineInviterEligibility(x, sub_date)]
     print potential_inviters
     print eligible_inviters        
-    
-
-
-
-
