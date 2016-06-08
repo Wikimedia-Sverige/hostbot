@@ -16,34 +16,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Template:
-	"""templates of profiles for wiki pages"""
-	def __init__(self):
-		self.profile_templates = {
-		'featured_hosts' : u"""
+    """templates of profiles for wiki pages"""
+    def __init__(self):
+        self.profile_templates = {
+        'featured_hosts' : u"""
 {{{{Wikipedia:Teahouse/Host_featured
 | username = {username}
 | image = {image}
 }}}}""",
-		'featured_guests_left' : u"""
+        'featured_guests_left' : u"""
 {{{{Wikipedia:Teahouse/Guest
 | username = {username}
 | image = {image}
 | quote = {quote}
 }}}}""",
-		'featured_guests_right' : u"""
+        'featured_guests_right' : u"""
 {{{{Wikipedia:Teahouse/Guest
 | username = {username}
 | image = {image}
 | quote = {quote}
 }}}}""",
-	'intro' : u"""=Hosts=\n{{{{TOC hidden}}}}\n<br/>\n</noinclude>
+    'intro' : u"""=Hosts=\n{{{{TOC hidden}}}}\n<br/>\n</noinclude>
 {profiles}""",
-	'th invite templates' : u"{{{{subst:Wikipedia:Teahouse/HostBot_Invitation|personal=The Teahouse is a friendly space where new editors can ask questions about contributing to Wikipedia and get help from experienced editors like {{{{noping|{inviter:s}}}}} ([[User_talk:{inviter:s}|talk]]). |bot={{{{noping|HostBot}}}}|timestamp=~~~~~}}}}",
-	'twa invite templates' : u"""{{{{subst:Wikipedia:TWA/Invite|personal=I hope to see you there! {{{{noping|{inviter:s}}}}}|signature=~~~~}}}}""",
-	'test invite templates' : u"{{{{subst:User:HostBot/Invitation|personal=The Teahouse is a friendly space where new editors can ask questions about contributing to Wikipedia and get help from experienced editors like {{{{noping|{inviter:s}}}}} ([[User_talk:{inviter:s}|talk]]). |bot={{{{noping|HostBot}}}}|timestamp=~~~~~}}}}", #only use when hostbot_settings urls set to testwiki	
-	
-}
-	def getTemplate(self, member):
-		tmplt = self.profile_templates[member]
-		return tmplt
+    'th invite templates' : u"{{{{subst:Wikipedia:Teahouse/HostBot_Invitation|personal=The Teahouse is a friendly space where new editors can ask questions about contributing to Wikipedia and get help from experienced editors like {{{{noping|{inviter:s}}}}} ([[User_talk:{inviter:s}|talk]]). |bot={{{{noping|HostBot}}}}|timestamp=~~~~~}}}}",
+    'twa invite templates' : u"""{{{{subst:Wikipedia:TWA/Invite|personal=I hope to see you there! {{{{noping|{inviter:s}}}}}|signature=~~~~}}}}""",
+    'test invite templates' : u"{{{{subst:User:HostBot/Invitation|personal=The Teahouse is a friendly space where new editors can ask questions about contributing to Wikipedia and get help from experienced editors like {{{{noping|{inviter:s}}}}} ([[User_talk:{inviter:s}|talk]]). |bot={{{{noping|HostBot}}}}|timestamp=~~~~~}}}}", #only use when hostbot_settings urls set to testwiki
 
+}
+    def getTemplate(self, member):
+        tmplt = self.profile_templates[member]
+        return tmplt

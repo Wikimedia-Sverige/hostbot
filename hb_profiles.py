@@ -59,7 +59,7 @@ class Samples:
         query = self.queries.getQuery(query_key)
         self.cursor.execute(query)
         self.conn.commit()
-        
+
     def selectSample(self, query_key, sub_sample=False):
         """
         Returns a list of usernames and ids of candidates for invitation
@@ -70,10 +70,10 @@ class Samples:
         sample_set = [(row[0],row[1], row[2]) for row in rows]
         if sub_sample:
         	sample_set = sample_set[:5]
-        return sample_set 
-        
+        return sample_set
+
 #         self.cursor.close()
-#         self.conn.close()    
+#         self.conn.close()
 
     def updateOneRow(self, query_key, qvars):
         """
@@ -85,7 +85,7 @@ class Samples:
         self.conn.commit()
 #         except:
 #             print "something went wrong with this one"
-                              
+
 class Profiles:
     """Create, parse, and post formatted messages to wiki."""
 
@@ -93,9 +93,9 @@ class Profiles:
         """
         Instantiate your editing session.
         """
-        self.page_path = path        
+        self.page_path = path
         if user_name:
-            self.user_name = user_name        
+            self.user_name = user_name
         if user_id:
             self.user_id = user_id
         if page_id:
@@ -107,8 +107,8 @@ class Profiles:
         self.auth1 = OAuth1(unicode("b5d87cbe96174f9435689a666110159c"),
                 client_secret=unicode(hb_config.client_secret),
                 resource_owner_key=unicode("ca1b222d687be9ac33cfb49676f5bfd2"),
-                resource_owner_secret=unicode(hb_config.resource_owner_secret))      
-                
+                resource_owner_secret=unicode(hb_config.resource_owner_secret))
+
     def getToken(self):
         """
         Request a token for your request
@@ -122,14 +122,14 @@ class Profiles:
                 'format': "json"
                 },
             headers={'User-Agent': self.user_agent},
-            auth=self.auth1,        
+            auth=self.auth1,
             )
         doc = response.json() #why name this variable doc?
         try:
-            self.token = doc['query']['tokens']['csrftoken'] 
+            self.token = doc['query']['tokens']['csrftoken']
         except:
             self.token = None
-        
+
     def formatProfile(self, val):
         """
         takes in a dictionary of parameter values and plugs them into the specified template
@@ -138,7 +138,7 @@ class Profiles:
         tmplt = page_templates.getTemplate(self.profile_settings['type'])
         tmplt = tmplt.format(**val).encode('utf-8')
         return tmplt
-        
+
     def publishProfile(self):
         """
         Publishes one or more formatted messages on a wiki.
@@ -161,8 +161,7 @@ class Profiles:
                     },
                 headers={'User-Agent': self.user_agent},
                 auth=self.auth1
-                )     
+                )
             self.invited = True
         except:
-            print "unable to invite " + self.user_name + " at this time."   #should be logged, not printed  
-
+            print "unable to invite " + self.user_name + " at this time."   #should be logged, not printed

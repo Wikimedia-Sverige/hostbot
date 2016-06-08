@@ -30,22 +30,22 @@ def getEligibleInviters(elig_check, potential_inviters):
 
 def getEligibleInvitees(elig_check, potential_invitees, skip_templates):
     """
-    Takes an eligibility checker object, a list of keywords, and 
-    a list of invite candidates (user_name, user_id, talkpage_id). 
+    Takes an eligibility checker object, a list of keywords, and
+    a list of invite candidates (user_name, user_id, talkpage_id).
     Returns a dictionary with lists of eligible and ineligible invitees.
     """
     eligible_invitees = [x for x in potential_invitees if elig_check.determineInviteeEligibility(x)]
     return eligible_invitees
-    
-def runSample(c, inviter, message, params):   
+
+def runSample(c, inviter, message, params):
     prof = hb_profiles.Profiles(params['output namespace'] + c[0], user_name = c[0], user_id = c[1], page_id = c[2],  settings = params)
     prof.inviter = inviter
     prof.message = message
     prof.invited = False
     prof.skip = False
     prof = inviteGuests(prof, prof.message[1], prof.inviter)
-    return prof    
-    
+    return prof
+
 def inviteGuests(prof, message_text, inviter):
     """
     Invites todays newcomers.
@@ -63,12 +63,12 @@ if __name__ == "__main__":
     param = hb_output_settings.Params()
     params = param.getParams(sys.argv[1])
     elig_check = hb_toolkit.Eligible(params)
-    
+
     daily_sample = hb_profiles.Samples()
     daily_sample.insertInvitees("teahouse experiment newbies") #need to generalize for TWA too
     daily_sample.updateTalkPages("th add talkpage") #need to generalize for TWA too
     candidates = daily_sample.selectSample(params['select query'], sub_sample=False)
-    #make this a function    
+    #make this a function
 #     user_name = sys.argv[2]
 #     user_id = int(sys.argv[3]) #int so it will be committed to the db
 #     page_id = sys.argv[4]
