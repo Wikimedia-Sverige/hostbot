@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Copyright 2013 Jtmorgan
+# Copyright 2013, 2016 Jtmorgan, Sebastian Berlin
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -96,6 +96,7 @@ class Profiles:
         self.page_path = path
         if user_name:
             self.user_name = user_name
+            self.edit_summ = hb_config.summary.format(invitee = self.user_name)
         if user_id:
             self.user_id = user_id
         if page_id:
@@ -134,10 +135,8 @@ class Profiles:
         """
         takes in a dictionary of parameter values and plugs them into the specified template
         """
-        page_templates = templates.Template()
-        tmplt = page_templates.getTemplate(self.profile_settings['type'])
-        tmplt = tmplt.format(**val).encode('utf-8')
-        return tmplt
+        message = hb_config.message.format(**val).encode('utf-8')
+        return message
 
     def publishProfile(self):
         """

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Copyright 2012 Jtmorgan
+# Copyright 2012, 2016 Jtmorgan, Sebastian Berlin
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@ def inviteGuests(prof, message_text, inviter):
     Invites todays newcomers.
     """
     prof.invite = prof.formatProfile({'inviter' : inviter, 'message' : message_text})
-    prof.edit_summ = prof.user_name + params["edit summary"]
     try:
         prof.getToken()
         prof.publishProfile()
