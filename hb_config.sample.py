@@ -7,10 +7,11 @@ apiurl = 'http://en.wikipedia.org/w/api.php'
 indexurl = 'http://en.wikipedia.org/w/index.php'
 
 # OAuth details
-oauth_api_url = 'http://en.wikipedia.org/wiki/Special:OAuth ?'
 oauth_user_agent = 'Myuseragent'
-client_secret = 'secret'
-resource_owner_secret = 'secret'
+consumer_token = u'...'
+consumer_secret = u'secret'
+access_token = u'...'
+access_secret = u'secret'
 
 # db details
 host = 'enwiki.labsdb'

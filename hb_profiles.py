@@ -103,12 +103,12 @@ class Profiles:
             self.page_id = str(page_id)
         if settings:
             self.profile_settings = settings
-        self.api_url = hb_config.oauth_api_url
+        self.api_url = hb_config.apiurl
         self.user_agent = hb_config.oauth_user_agent
-        self.auth1 = OAuth1(unicode("b5d87cbe96174f9435689a666110159c"),
-                client_secret=unicode(hb_config.client_secret),
-                resource_owner_key=unicode("ca1b222d687be9ac33cfb49676f5bfd2"),
-                resource_owner_secret=unicode(hb_config.resource_owner_secret))
+        self.auth1 = OAuth1(unicode(hb_config.consumer_token),
+                client_secret=unicode(hb_config.consumer_secret),
+                resource_owner_key=unicode(hb_config.access_token),
+                resource_owner_secret=unicode(hb_config.access_secret))
 
     def getToken(self):
         """
@@ -121,10 +121,10 @@ class Profiles:
                 'meta': "tokens",
                 'type': "csrf",
                 'format': "json"
-                },
+            },
             headers={'User-Agent': self.user_agent},
             auth=self.auth1,
-            )
+        )
         doc = response.json() #why name this variable doc?
         try:
             self.token = doc['query']['tokens']['csrftoken']

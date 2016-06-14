@@ -16,3 +16,8 @@ Logs activity on the Teahouse: questions asked and answered, profiles created, u
 
 === Featuring ===
 Features recent content in galleries on the Teahouse front pages: recently asked questions, recently created guest profiles, and recently active hosts. Also re-orders the profiles on the Teahouse Host Lounge to feature most active hosts at the top.
+
+=== Requirements ==
+* Python >= 2.7.9 (due to https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning)
+
+See ''requirements.txt'' for other dependencies.
