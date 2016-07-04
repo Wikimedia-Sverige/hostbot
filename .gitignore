@@ -6,9 +6,13 @@ hostbot_settings*
 old
 *.InterarchyMirrorCacheData
 "Icon\r"
-*.pyc
 hcde_skillshare
 config.json
 time.log
 log/
 *~
+*.pyc
+
+.localpython/*
+Python-2.7.9*
+venv_invite/*
