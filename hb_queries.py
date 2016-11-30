@@ -1,6 +1,6 @@
 #! /usr/bin/python2.7
 
-# Copyright 2013, 2016 Jtmorgan, Lokal_Profil
+# Copyright 2013, 2016 Jtmorgan, Lokal_Profil, Sebastian Berlin
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hb_config
 
 class Query:
     """Queries for database tracking tables."""
@@ -36,14 +37,15 @@ class Query:
         * made 5 or more edits,
         * not been blocked.
         """
+
         query = u"""
 INSERT IGNORE INTO {table:s}
 (user_id, user_name, user_registration, user_editcount, sample_date)
 SELECT user_id, user_name, user_registration, user_editcount, NOW()
 FROM {wikidb:s}.user
 WHERE user_registration > DATE_FORMAT(
-    DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y%m%d%H%i%s')
-AND user_editcount >=5
+    DATE_SUB(NOW(),INTERVAL {max_user_age:d} DAY),'%Y%m%d%H%i%s')
+AND user_editcount >= {min_edits:d}
 AND user_id NOT IN (
     SELECT ug_user FROM {wikidb:s}.user_groups WHERE ug_group = 'bot')
 AND user_name not in (
@@ -51,7 +53,10 @@ AND user_name not in (
     where log_type = "block" and log_action = "block"
     and log_timestamp >  DATE_FORMAT(
         DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y%m%d%H%i%s'))
-""".format(table=self.invitee_table, wikidb=self.wikidb)
+""".format(table=self.invitee_table,
+           wikidb=self.wikidb,
+           max_user_age=hb_config.max_user_age,
+           min_edits=hb_config.min_edits)
         self.mysql_queries['teahouse experiment newbies'] = query
 
     def make_th_add_talkpage(self):

@@ -69,13 +69,13 @@ class Params:
             },
             'th_invites' : {
                 'select query' : 'th experiment invitees',
-                'type' : 'th invite templates',
+#                'type' : 'th invite templates',
                 'output namespace' : 'User_talk:',
-                'output section' : 'new',
-                'edit summary' : ', you are invited to the Teahouse!',
-                'output section title' : '== {{subst:PAGENAME}}, you are invited to the Teahouse ==',
-                'inviters' : ['FikarummetBot', ],
-                'messages' : [('th exp', ""),], #not currently using the message text
+#                'output section' : 'new',
+#                'edit summary' : ', you are invited to the Teahouse!',
+#                'output section title' : '== {{subst:PAGENAME}}, you are invited to the Teahouse ==',
+#                'inviters' : ['FikarummetBot', ],
+#                'messages' : [('th exp', ""),], #not currently using the message text
                 'skip templates' : ['uw-vandalism4', 'final warning', '{{sock|', 'uw-unsourced4', 'uw-socksuspect', 'Socksuspectnotice', 'only warning','without further warning', 'Uw-socksuspect', 'sockpuppetry', 'Teahouse', 'uw-cluebotwarning4', 'uw-vblock', 'uw-speedy4'],
             },
             'test_invites' : { #when using the test db th_invite_test

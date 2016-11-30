@@ -18,17 +18,20 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+import random
+
 import hb_toolkit
 import hb_output_settings
 import hb_profiles
-import random
+import page_reader
+import hb_config
 
 def getEligibleInviters(elig_check, potential_inviters):
     """Filter out inviters with no edits in the last 21 days."""
     eligible_inviters = [x for x in potential_inviters if elig_check.determineInviterEligibility(x, 21)]
     return eligible_inviters
 
-def getEligibleInvitees(elig_check, potential_invitees, skip_templates):
+def getEligibleInvitees(elig_check, potential_invitees):
     """
     Takes an eligibility checker object, a list of keywords, and
     a list of invite candidates (user_name, user_id, talkpage_id).
@@ -61,6 +64,8 @@ def inviteGuests(prof, message_text, inviter):
 if __name__ == "__main__":
     param = hb_output_settings.Params()
     params = param.getParams(sys.argv[1])
+    # params contains information about skipped templates, user talk
+    # namespace and the query for getting candidates below.
     elig_check = hb_toolkit.Eligible(params)
 
     daily_sample = hb_profiles.Samples()
@@ -78,8 +83,8 @@ if __name__ == "__main__":
     else:
         pass
 #     inviters = params['inviters'] #for TWA
-    inviters = getEligibleInviters(elig_check, params['inviters'])
-    invitees = getEligibleInvitees(elig_check, candidates, params['skip templates'])
+    inviters = getEligibleInviters(elig_check, hb_config.inviters)
+    invitees = getEligibleInvitees(elig_check, candidates)
     skipped_editors = [x for x in candidates if x not in invitees]
 #     print skipped_editors
     for i in invitees:
