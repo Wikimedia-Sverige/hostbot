@@ -2,7 +2,6 @@ import page_reader
 
 # Wiki login details
 username = 'MyBot'
-password = 'mybotspassword'
 apiurl = 'http://en.wikipedia.org/w/api.php'
 indexurl = 'http://en.wikipedia.org/w/index.php'
 
