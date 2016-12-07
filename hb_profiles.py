@@ -89,7 +89,7 @@ class Samples:
 class Profiles:
     """Create, parse, and post formatted messages to wiki."""
 
-    def __init__(self, path, user_name = False, user_id = False, page_id = False, settings = False):
+    def __init__(self, path, user_name = False, user_id = False, page_id = False):
         """
         Instantiate your editing session.
         """
@@ -101,8 +101,6 @@ class Profiles:
             self.user_id = user_id
         if page_id:
             self.page_id = str(page_id)
-        if settings:
-            self.profile_settings = settings
         self.api_url = hb_config.apiurl
         self.user_agent = hb_config.oauth_user_agent
         self.auth1 = OAuth1(unicode(hb_config.consumer_token),
@@ -135,6 +133,9 @@ class Profiles:
         """
         takes in a dictionary of parameter values and plugs them into the specified template
         """
+
+        # NOTE: This function is no longer used for inviting, but is
+        # still used elswhere.
         message = hb_config.message.format(**val).encode('utf-8')
         return message
 

@@ -40,20 +40,26 @@ def getEligibleInvitees(elig_check, potential_invitees):
     eligible_invitees = [x for x in potential_invitees if elig_check.determineInviteeEligibility(x)]
     return eligible_invitees
 
-def runSample(c, inviter, message, params):
-    prof = hb_profiles.Profiles(params['output namespace'] + c[0], user_name = c[0], user_id = c[1], page_id = c[2],  settings = params)
-    prof.inviter = inviter
-    prof.message = message
+def runSample(invitee, inviter, params):
+    prof = hb_profiles.Profiles(
+        params['output namespace'] + invitee[0],
+        user_name = invitee[0],
+        user_id = invitee[1],
+        page_id = invitee[2]
+    )
     prof.invited = False
     prof.skip = False
-    prof = inviteGuests(prof, prof.message[1], prof.inviter)
+    prof = inviteGuests(prof, inviter)
     return prof
 
-def inviteGuests(prof, message_text, inviter):
+def inviteGuests(prof, inviter):
     """
     Invites todays newcomers.
     """
-    prof.invite = prof.formatProfile({'inviter' : inviter, 'message' : message_text})
+    if inviter:
+        message = hb_config.message.format(inviter=inviter).encode('utf-8')
+    else:
+        message = hb_config.message.encode('utf-8')
     try:
         prof.getToken()
         prof.publishProfile()
@@ -83,12 +89,29 @@ if __name__ == "__main__":
     else:
         pass
 #     inviters = params['inviters'] #for TWA
-    inviters = getEligibleInviters(elig_check, hb_config.inviters)
+    if hb_config.inviters and "{inviter:s}" not in hb_config.message:
+        print "WARNING: Inviters specified ({}), but no inviter field in message ('{}').".format(hb_config.inviters, hb_config.message)
+        inviters = None
+    elif not hb_config.inviters and "{inviter:s}" in hb_config.message:
+        raise Exception("Inviter field in message ('{}'), but no inviters specified.".format(hb_config.message))
+    else:
+        # Only make eligible inviter list if there is a list of
+        # inviters to choose from *and* the message contain inviter
+        # slot.
+        inviters = getEligibleInviters(elig_check, hb_config.inviters)
     invitees = getEligibleInvitees(elig_check, candidates)
+
+    print "Invitees ({}): {}".format(len(invitees), invitees)
+    print "Inviters: {}".format(inviters)
+
     skipped_editors = [x for x in candidates if x not in invitees]
 #     print skipped_editors
-    for i in invitees:
-        profile = runSample(i, random.choice(inviters), random.choice(params['messages']), params)
+    for invitee in invitees:
+        if not inviters:
+            inviter = None
+        else:
+            inviter = random.choice(inviters)
+        profile = runSample(invitee, inviter, params)
         daily_sample.updateOneRow("update th invite status", [int(profile.invited), int(profile.skip), profile.user_id])
     for s in skipped_editors:
         daily_sample.updateOneRow("update th invite status", [0, 1, s[1]])
