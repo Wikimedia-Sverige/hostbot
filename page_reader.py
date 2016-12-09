@@ -32,12 +32,18 @@ def read_json_value(page, name):
     """Read the value from a page formatted as JSON, given a name."""
 
     try:
-        page_content = read_page(page)
-        page_json = json.loads(page_content)
-        return page_json[name]
+        data_as_dict = read_json(page)
+        return data_as_dict[name]
     except KeyError:
         raise PageReaderError("Couldn't read variable '{}' from page '{}'"
                               .format(name, page))
+
+def read_json(page):
+    """Read a page with JSON."""
+
+    page_content = read_page(page)
+    page_json = json.loads(page_content)
+    return page_json
 
 def read_page(raw_page):
     """Read the content of a page, given its title.
@@ -172,3 +178,11 @@ def get_local_user_namespace():
         local_user_namespace = response["query"]["namespaces"]["2"]["*"]
         cache["local_user_namespace"] = local_user_namespace
     return local_user_namespace
+
+def read_json_array(page):
+    """Read a JSON array from a page."""
+
+    data = read_json(page)
+    if not isinstance(data, list):
+        raise PageReaderError("Couldn't read data on page '{}' as array.".format(page))
+    return data

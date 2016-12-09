@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Copyright 2015-2016 Jtmorgan, Lokal_Profil
+# Copyright 2015-2016 Jtmorgan, Lokal_Profil, Sebastian Berlin
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,13 +23,12 @@ import requests
 import sys
 import requests.packages.urllib3
 requests.packages.urllib3.disable_warnings()
-
+import re
 
 class Eligible:
 
-    def __init__(self, params):
+    def __init__(self):
         self.api_url = hb_config.apiurl
-        self.output_params = params
 
     def getLatestEditDate(self, user_name):
         """
@@ -118,30 +117,51 @@ class Eligible:
         """
         Takes a tuple of user_name, user_id, userpage_id.
         """
-        is_eligible = False
-        has_skip_template = False
-        is_blocked = self.getBlockStatus(invitee[1])
-        if invitee[2] is not None:
-            has_skip_template = self.checkTalkPage(self.output_params["output namespace"] + invitee[0], invitee[2], self.output_params["skip templates"])
-#             print invitee[0] + str(has_skip_template)
-        if not has_skip_template and not is_blocked:
-            is_eligible = True
-        else:
-            pass
-        return is_eligible
 
-    def checkTalkPage(self, page_path, page_id, skip_templates):
+        is_blocked = self.getBlockStatus(invitee["id"])
+        if is_blocked:
+            print "User '{}' was not eligible; blocked.".format(invitee["name"])
+            return False
+        if invitee["talkpage_id"] is not None:
+            talkpage_path = "User talk:{}".format(invitee["name"])
+            has_skip_string = self.checkTalkPage(
+                talkpage_path,
+                invitee["talkpage_id"],
+                hb_config.skip_strings
+            )
+            if has_skip_string:
+                print "User '{}' was not eligible; has skip string.".format(invitee["name"])
+                return False
+            has_skip_template = self.checkTalkPage(
+                talkpage_path,
+                invitee["talkpage_id"],
+                hb_config.skip_templates,
+                u"{{{{\s*{}\s*[}}|]"
+            )
+            if has_skip_template:
+                print "User '{}' was not eligible; has skip template.".format(invitee["name"])
+                return False
+#             print invitee[0] + str(has_skip_template)
+        return True
+
+    def checkTalkPage(self, page_path, page_id, strings, regex_template=None):
+        """Takes a list of strings. If any of those words appear in the given
+        page, return True, else False. If regex_template is given, a
+        regex is created by inserting the strings in regex_template
+        and the searching for that regex.
+
         """
-        Takes a dictionary of key words.
-        If those words appear in the user talkpage,
-        skip the user (don't send an invite).
-        """
-        skip = False
+
         tp_text = self.getPageText(page_path, page_id)
-        for t in skip_templates:
-            if t in tp_text:
-                skip = True
-        return skip
+        if regex_template is not None:
+            for string in strings:
+                regex = regex_template.format(string)
+                if re.search(regex, tp_text, re.I | re.U):
+                    return True
+            return False
+        else:
+            # Check if any of the strings are present in the page content.
+            return any(s in tp_text for s in strings)
 
     def getPageText(self, page_path, page_id, section=False): #create a generic class?
         """
@@ -175,7 +195,7 @@ if __name__ == "__main__":
     param = hb_output_settings.Params()
     params = param.getParams(sys.argv[1]) #what type of invites
     sub_date = int(sys.argv[2]) #numeric threshold (days ago)
-    e = Eligible(params)
+    e = Eligible()
     potential_inviters = params['inviters']
     eligible_inviters = [x for x in potential_inviters if e.determineInviterEligibility(x, sub_date)]
     print potential_inviters

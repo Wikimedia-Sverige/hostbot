@@ -67,7 +67,14 @@ class Samples:
         sample_query = self.queries.getQuery(query_key)
         self.cursor.execute(sample_query)
         rows = self.cursor.fetchall()
-        sample_set = [(row[0],row[1], row[2]) for row in rows]
+        sample_set = [
+            {
+                "name": row[0],
+                "id": row[1],
+                "talkpage_id": row[2]
+            }
+            for row in rows
+        ]
         if sub_sample:
         	sample_set = sample_set[:5]
         return sample_set
@@ -89,11 +96,10 @@ class Samples:
 class Profiles:
     """Create, parse, and post formatted messages to wiki."""
 
-    def __init__(self, path, user_name = False, user_id = False, page_id = False):
+    def __init__(self, user_name=False, user_id=False, page_id=False):
         """
         Instantiate your editing session.
         """
-        self.page_path = path
         if user_name:
             self.user_name = user_name
             self.edit_summ = hb_config.summary.format(invitee = self.user_name)
@@ -143,22 +149,24 @@ class Profiles:
         """
         Publishes one or more formatted messages on a wiki.
         """
+        data = {
+            'action': "edit",
+            'title': "User talk:{}".format(self.user_name),
+            'section': "new",
+            'summary': self.edit_summ,
+            'text': self.invite,
+            'bot': 1,
+            'token': self.token,
+            'format': "json"
+        }
+        print "Sending request: {}".format(data)
         try:
 #             print self.page_path
 #             print self.edit_summ
 #             print self.invite
             response = requests.post(
                 self.api_url,
-                data={
-                    'action': "edit",
-                    'title': self.page_path,
-                    'section': "new",
-                    'summary': self.edit_summ,
-                    'text': self.invite,
-                    'bot': 1,
-                    'token': self.token,
-                    'format': "json"
-                    },
+                data=data,
                 headers={'User-Agent': self.user_agent},
                 auth=self.auth1
                 )

@@ -30,7 +30,7 @@ editsumm = 'automatic edits by [[User:HostBot|HostBot]]'
 
 # The page on the wiki where the invitation parameters are defined as
 # JSON.
-invitation_parameters_page = "User:FikarummetBot/Invitation_parameters"
+invitation_parameters_page = "User:HostbotBot/Invitation parameters"
 
 # The maximum age (time since account registration), in days, that a
 # user may have to qualify for invitation.
@@ -43,10 +43,10 @@ min_edits = page_reader.read_json_value(
     "min_edits"
 )
 
-# The message that is posted on an invitee's talk page. {inviter:s} is the
-# name of the user being mentioned as contact.
-# Each literal { or } must be escaped by a second instance of the same character.
-message = '{{{{subst:Wikipedia:Teahouse/HostBot_Ivitation|inviter={inviter:s}}}}}'
+# The message that is posted on an invitee's talk page. {inviter:s} is
+# the name of the user being mentioned as contact.  Each literal { or
+# } must be escaped by a second instance of the same character.
+message = '{{{{subst:HostBot/Invitation message|inviter={inviter:s}}}}}'
 
 # The summary for the message. {invitee:s} is the name of the invited user.
 summary = '{invitee:s}, you are invited to the Teahouse!'
@@ -55,4 +55,19 @@ summary = '{invitee:s}, you are invited to the Teahouse!'
 # selected at random from this list, for each
 # message. page_reader.read_user_list_page() can be used to retrieve
 # user names from a wiki page with one user link per line.
-inviters = ["Inviting_user"]
+inviters = ["Inviting user"]
+
+# Users with any of these strings in their talk page will not be
+# considered for inviting. If a wiki page with templates are used for
+# this, you should format it as a JSON array and read it with
+# page_reader.read_json_array(). This prevents the templates from
+# being transcluded.
+skip_strings = [
+    "You are hereby blocked",
+    "Teahouse"
+]
+
+# Same as skip_string, but these are template names instead. Instead
+# of looking for plain strings, these stings are used to flexibly
+# search for templates.
+skip_templates = ["blocked"]

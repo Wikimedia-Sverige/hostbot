@@ -40,12 +40,11 @@ def getEligibleInvitees(elig_check, potential_invitees):
     eligible_invitees = [x for x in potential_invitees if elig_check.determineInviteeEligibility(x)]
     return eligible_invitees
 
-def runSample(invitee, inviter, params):
+def runSample(invitee, inviter):
     prof = hb_profiles.Profiles(
-        params['output namespace'] + invitee[0],
-        user_name = invitee[0],
-        user_id = invitee[1],
-        page_id = invitee[2]
+        user_name=invitee["name"],
+        user_id=invitee["id"],
+        page_id=invitee["talkpage_id"]
     )
     prof.invited = False
     prof.skip = False
@@ -57,37 +56,32 @@ def inviteGuests(prof, inviter):
     Invites todays newcomers.
     """
     if inviter:
-        message = hb_config.message.format(inviter=inviter).encode('utf-8')
+        prof.invite = hb_config.message.format(inviter=inviter).encode('utf-8')
     else:
-        message = hb_config.message.encode('utf-8')
-    try:
-        prof.getToken()
-        prof.publishProfile()
-    except:
-        print "something went wrong trying to invite " + page_path
+        # Calling format even if there is no inviter field, to always
+        # have the same amount of curly brackets in the message.
+        prof.invite = hb_config.message.format().encode('utf-8')
+    prof.getToken()
+    prof.publishProfile()
     return prof
 
 if __name__ == "__main__":
-    param = hb_output_settings.Params()
-    params = param.getParams(sys.argv[1])
     # params contains information about skipped templates, user talk
     # namespace and the query for getting candidates below.
-    elig_check = hb_toolkit.Eligible(params)
+    elig_check = hb_toolkit.Eligible()
 
     daily_sample = hb_profiles.Samples()
     daily_sample.insertInvitees("teahouse experiment newbies") #need to generalize for TWA too
     daily_sample.updateTalkPages("th add talkpage") #need to generalize for TWA too
-    candidates = daily_sample.selectSample(params['select query'], sub_sample=False)
+    select_query_key = "th experiment invitees"
+    candidates = daily_sample.selectSample(select_query_key, sub_sample=False)
     #make this a function
 #     user_name = sys.argv[2]
 #     user_id = int(sys.argv[3]) #int so it will be committed to the db
 #     page_id = sys.argv[4]
 #     candidates = [(user_name, user_id, page_id)]
-    if sys.argv[1] in ('th_invites', 'twa_invites', 'test_invites'): #parameterize
-        if len(candidates) > 150:
-            candidates = random.sample(candidates, 150) #pull 150 users out randomly
-    else:
-        pass
+    if len(candidates) > 150:
+        candidates = random.sample(candidates, 150) #pull 150 users out randomly
 #     inviters = params['inviters'] #for TWA
     if hb_config.inviters and "{inviter:s}" not in hb_config.message:
         print "WARNING: Inviters specified ({}), but no inviter field in message ('{}').".format(hb_config.inviters, hb_config.message)
@@ -111,7 +105,7 @@ if __name__ == "__main__":
             inviter = None
         else:
             inviter = random.choice(inviters)
-        profile = runSample(invitee, inviter, params)
+        profile = runSample(invitee, inviter)
         daily_sample.updateOneRow("update th invite status", [int(profile.invited), int(profile.skip), profile.user_id])
     for s in skipped_editors:
         daily_sample.updateOneRow("update th invite status", [0, 1, s[1]])

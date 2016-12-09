@@ -67,17 +67,17 @@ class Params:
                 'output section' : 1,
                 'edit summary' : 'Reordering %ss, putting recently active participants at the top',
             },
-            'th_invites' : {
-                'select query' : 'th experiment invitees',
+            # 'th_invites' : {
+            #     'select query' : 'th experiment invitees',
 #                'type' : 'th invite templates',
-                'output namespace' : 'User_talk:',
+                # 'output namespace' : 'User_talk:', NOTE: This is still used by scripts/twa/send_invites.py
 #                'output section' : 'new',
 #                'edit summary' : ', you are invited to the Teahouse!',
 #                'output section title' : '== {{subst:PAGENAME}}, you are invited to the Teahouse ==',
 #                'inviters' : ['FikarummetBot', ],
 #                'messages' : [('th exp', ""),], #not currently using the message text
-                'skip templates' : ['uw-vandalism4', 'final warning', '{{sock|', 'uw-unsourced4', 'uw-socksuspect', 'Socksuspectnotice', 'only warning','without further warning', 'Uw-socksuspect', 'sockpuppetry', 'Teahouse', 'uw-cluebotwarning4', 'uw-vblock', 'uw-speedy4'],
-            },
+                # 'skip templates' : ['uw-vandalism4', 'final warning', '{{sock|', 'uw-unsourced4', 'uw-socksuspect', 'Socksuspectnotice', 'only warning','without further warning', 'Uw-socksuspect', 'sockpuppetry', 'Teahouse', 'uw-cluebotwarning4', 'uw-vblock', 'uw-speedy4'], NOTE: This is still used by scripts/twa/send_invites.py
+            # },
             'test_invites' : { #when using the test db th_invite_test
                 'select query' : 'th test invitees',
                 'type' : 'th invite templates',
