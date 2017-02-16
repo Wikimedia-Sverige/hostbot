@@ -15,13 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import hb_config
+import logging
+
 import MySQLdb
+import requests
+from requests_oauthlib import OAuth1
+
+import hb_config
 import hb_output_settings as output_settings
 import hb_queries
 import hb_templates as templates
-import requests
-from requests_oauthlib import OAuth1
 
 #TODO: add in logging again, more try statements
 #hb_config to config
@@ -39,7 +42,8 @@ class Samples:
             db = hb_config.dbname,
             read_default_file = hb_config.defaultcnf,
             use_unicode=1,
-            charset="utf8")
+            charset="utf8"
+        )
         self.cursor = self.conn.cursor()
         self.queries = hb_queries.Query(hb_config.wikidb,
                                         hb_config.invitee_table)
@@ -159,7 +163,7 @@ class Profiles:
             'token': self.token,
             'format': "json"
         }
-        print "Sending request: {}".format(data)
+        logging.debug("Sending request: {}".format(data))
         try:
 #             print self.page_path
 #             print self.edit_summ
@@ -172,4 +176,7 @@ class Profiles:
                 )
             self.invited = True
         except:
-            print "unable to invite " + self.user_name + " at this time."   #should be logged, not printed
+            logging.warning(
+                "Unable to invite user '{}' at this time."
+                    .format(self.user_name)
+            )

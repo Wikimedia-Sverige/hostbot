@@ -15,15 +15,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 from datetime import datetime, timedelta
+import sys
+import logging
+
 import dateutil.parser
+import requests
+import requests.packages.urllib3
+
 import hb_output_settings
 import hb_config
-import requests
-import sys
-import requests.packages.urllib3
+
 requests.packages.urllib3.disable_warnings()
-import re
 
 class Eligible:
 
@@ -57,7 +61,9 @@ class Eligible:
         except IndexError:
             # TODO raise a different error which determineInviterEligibility()
             # can except for more clarity.
-            print "The user {user:s} has not made any edits and should not be an inviter!".format(user=user_name)
+            logging.warning(
+                "The user {:s} has not made any edits and should not be an inviter!".format(user_name)
+            )
             raise
         return latest_edit_date
 
@@ -120,7 +126,9 @@ class Eligible:
 
         is_blocked = self.getBlockStatus(invitee["id"])
         if is_blocked:
-            print "User '{}' was not eligible; blocked.".format(invitee["name"])
+            logging.info(
+                "User '{}' was not eligible; blocked.".format(invitee["name"])
+            )
             return False
         if invitee["talkpage_id"] is not None:
             talkpage_path = "User talk:{}".format(invitee["name"])
@@ -130,7 +138,11 @@ class Eligible:
                 hb_config.skip_strings
             )
             if has_skip_string:
-                print "User '{}' was not eligible; has skip string.".format(invitee["name"])
+                logging.info(
+                    "User '{}' was not eligible; has skip string.".format(
+                        invitee["name"]
+                    )
+                )
                 return False
             has_skip_template = self.checkTalkPage(
                 talkpage_path,
@@ -139,7 +151,10 @@ class Eligible:
                 u"{{{{\s*{}\s*[}}|]"
             )
             if has_skip_template:
-                print "User '{}' was not eligible; has skip template.".format(invitee["name"])
+                logging.info(
+                    "User '{}' was not eligible; has skip template."
+                        .format(invitee["name"])
+                )
                 return False
 #             print invitee[0] + str(has_skip_template)
         return True

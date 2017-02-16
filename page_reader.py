@@ -15,6 +15,7 @@
 
 import json
 import re
+import logging
 
 import requests
 
@@ -123,7 +124,9 @@ def read_user_list_page(page):
     for i, inviter_wikitext in enumerate(page_list):
         inviter_name = user_name_from_wikitext(inviter_wikitext)
         if inviter_name is None:
-            print u"Ignoring item #{} on page '{}', '{}' is not a valid user link.".format(i, page, inviter_wikitext)
+            logging.info(
+                u"Ignoring item #{} on page '{}', '{}' is not a valid user link.".format(i, page, inviter_wikitext)
+            )
         else:
             inviters.append(inviter_name)
     return inviters

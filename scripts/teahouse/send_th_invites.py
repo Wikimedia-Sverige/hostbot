@@ -19,12 +19,63 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 import random
+import logging
+
+import argparse
 
 import hb_toolkit
 import hb_output_settings
 import hb_profiles
 import page_reader
 import hb_config
+
+def send_invitations():
+    elig_check = hb_toolkit.Eligible()
+
+    daily_sample = hb_profiles.Samples()
+    daily_sample.insertInvitees("teahouse experiment newbies") #need to generalize for TWA too
+    daily_sample.updateTalkPages("th add talkpage") #need to generalize for TWA too
+    select_query_key = "th experiment invitees"
+    candidates = daily_sample.selectSample(select_query_key, sub_sample=False)
+    #make this a function
+#     user_name = sys.argv[2]
+#     user_id = int(sys.argv[3]) #int so it will be committed to the db
+#     page_id = sys.argv[4]
+#     candidates = [(user_name, user_id, page_id)]
+    if len(candidates) > 150:
+        candidates = random.sample(candidates, 150) #pull 150 users out randomly
+#     inviters = params['inviters'] #for TWA
+    if hb_config.inviters and "{inviter:s}" not in hb_config.message:
+        logging.warning(
+            "Inviters specified ({}), but no inviter field in message ('{}')."
+                .format(hb_config.inviters, hb_config.message)
+        )
+        inviters = None
+    elif not hb_config.inviters and "{inviter:s}" in hb_config.message:
+        raise Exception("Inviter field in message ('{}'), but no inviters specified.".format(hb_config.message))
+    else:
+        # Only make eligible inviter list if there is a list of
+        # inviters to choose from *and* the message contain inviter
+        # field.
+        inviters = getEligibleInviters(elig_check, hb_config.inviters)
+    invitees = getEligibleInvitees(elig_check, candidates)
+
+    logging.debug("Invitees ({}): {}".format(len(invitees), invitees))
+    logging.debug("Inviters: {}".format(inviters))
+
+    skipped_editors = [x for x in candidates if x not in invitees]
+#     print skipped_editors
+    for invitee in invitees:
+        if not inviters:
+            inviter = None
+        else:
+            inviter = random.choice(inviters)
+        profile = runSample(invitee, inviter)
+        daily_sample.updateOneRow("update th invite status", [int(profile.invited), int(profile.skip), profile.user_id])
+    for s in skipped_editors:
+        daily_sample.updateOneRow("update th invite status", [0, 1, s[1]])
+
+    daily_sample.updateTalkPages("th add talkpage") #need to generalize for TWA too
 
 def getEligibleInviters(elig_check, potential_inviters):
     """Filter out inviters with no edits in the last 21 days."""
@@ -66,48 +117,19 @@ def inviteGuests(prof, inviter):
     return prof
 
 if __name__ == "__main__":
-    # params contains information about skipped templates, user talk
-    # namespace and the query for getting candidates below.
-    elig_check = hb_toolkit.Eligible()
-
-    daily_sample = hb_profiles.Samples()
-    daily_sample.insertInvitees("teahouse experiment newbies") #need to generalize for TWA too
-    daily_sample.updateTalkPages("th add talkpage") #need to generalize for TWA too
-    select_query_key = "th experiment invitees"
-    candidates = daily_sample.selectSample(select_query_key, sub_sample=False)
-    #make this a function
-#     user_name = sys.argv[2]
-#     user_id = int(sys.argv[3]) #int so it will be committed to the db
-#     page_id = sys.argv[4]
-#     candidates = [(user_name, user_id, page_id)]
-    if len(candidates) > 150:
-        candidates = random.sample(candidates, 150) #pull 150 users out randomly
-#     inviters = params['inviters'] #for TWA
-    if hb_config.inviters and "{inviter:s}" not in hb_config.message:
-        print "WARNING: Inviters specified ({}), but no inviter field in message ('{}').".format(hb_config.inviters, hb_config.message)
-        inviters = None
-    elif not hb_config.inviters and "{inviter:s}" in hb_config.message:
-        raise Exception("Inviter field in message ('{}'), but no inviters specified.".format(hb_config.message))
-    else:
-        # Only make eligible inviter list if there is a list of
-        # inviters to choose from *and* the message contain inviter
-        # slot.
-        inviters = getEligibleInviters(elig_check, hb_config.inviters)
-    invitees = getEligibleInvitees(elig_check, candidates)
-
-    print "Invitees ({}): {}".format(len(invitees), invitees)
-    print "Inviters: {}".format(inviters)
-
-    skipped_editors = [x for x in candidates if x not in invitees]
-#     print skipped_editors
-    for invitee in invitees:
-        if not inviters:
-            inviter = None
-        else:
-            inviter = random.choice(inviters)
-        profile = runSample(invitee, inviter)
-        daily_sample.updateOneRow("update th invite status", [int(profile.invited), int(profile.skip), profile.user_id])
-    for s in skipped_editors:
-        daily_sample.updateOneRow("update th invite status", [0, 1, s[1]])
-
-    daily_sample.updateTalkPages("th add talkpage") #need to generalize for TWA too
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--log-path",
+        "-l",
+        help="Path to where the log file will be created."
+    )
+    args = parser.parse_args()
+    logging.basicConfig(
+        filename=args.log_path,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        level=logging.DEBUG
+    )
+    try:
+        send_invitations()
+    except:
+        logging.exception("Failed sending invitations:")

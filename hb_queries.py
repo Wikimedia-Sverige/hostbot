@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 import hb_config
 
 class Query:
@@ -100,4 +102,7 @@ WHERE user_id = %d
                 pass
             return query
         else:
-            print "something went wrong with query of type {query_type:s}"
+            logging.warning(
+                "Something went wrong with query of type {:s}."
+                    .format(query_type)
+            )
