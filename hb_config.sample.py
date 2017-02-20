@@ -71,3 +71,6 @@ skip_strings = [
 # of looking for plain strings, these stings are used to flexibly
 # search for templates.
 skip_templates = ["blocked"]
+
+# Wait at least this long, in seconds, between inviting users.
+invitation_delay = 10

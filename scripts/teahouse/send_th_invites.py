@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Copyright 2012, 2016 Jtmorgan, Sebastian Berlin
+# Copyright 2012, 2016-2017 Jtmorgan, Sebastian Berlin
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 import random
 import logging
+import time
 
 import argparse
 
@@ -73,12 +74,21 @@ def send_invitations():
     skipped_editors = [x for x in candidates if x not in invitees]
 #     print skipped_editors
     for invitee in invitees:
+        invitation_time = time.time()
+        logging.info("Inviting user: {}".format(invitee["name"]))
         if not inviters:
             inviter = None
         else:
             inviter = random.choice(inviters)
         profile = runSample(invitee, inviter)
-        daily_sample.updateOneRow("update th invite status", [int(profile.invited), int(profile.skip), profile.user_id])
+        daily_sample.updateOneRow(
+            "update th invite status",
+            [int(profile.invited), int(profile.skip), profile.user_id]
+        )
+        time_delta = time.time() - invitation_time
+        # Sleep so that the delay between invitations is at least the
+        # time specified in the config.
+        time.sleep(max(0, hb_config.invitation_delay - time_delta))
     for s in skipped_editors:
         daily_sample.updateOneRow("update th invite status", [0, 1, s[1]])
 
