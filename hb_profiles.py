@@ -21,7 +21,7 @@ import MySQLdb
 import requests
 from requests_oauthlib import OAuth1
 
-import hb_config
+import config_reader
 import hb_output_settings as output_settings
 import hb_queries
 import hb_templates as templates
@@ -38,15 +38,15 @@ class Samples:
         Set up the db connection.
         """
         self.conn = MySQLdb.connect(
-            host = hb_config.host,
-            db = hb_config.dbname,
-            read_default_file = hb_config.defaultcnf,
+            host=config_reader.get("host"),
+            db=config_reader.get("dbname"),
+            read_default_file=config_reader.get("defaultcnf"),
             use_unicode=1,
             charset="utf8"
         )
         self.cursor = self.conn.cursor()
-        self.queries = hb_queries.Query(hb_config.wikidb,
-                                        hb_config.invitee_table)
+        self.queries = hb_queries.Query(config_reader.get("wikidb"),
+                                        config_reader.get("invitee_table"))
 
     def insertInvitees(self, query_key):
         """
@@ -106,17 +106,19 @@ class Profiles:
         """
         if user_name:
             self.user_name = user_name
-            self.edit_summ = hb_config.summary.format(invitee = self.user_name)
+            self.edit_summ = config_reader.get("summary").format(
+                invitee=self.user_name
+            )
         if user_id:
             self.user_id = user_id
         if page_id:
             self.page_id = str(page_id)
-        self.api_url = hb_config.apiurl
-        self.user_agent = hb_config.oauth_user_agent
-        self.auth1 = OAuth1(unicode(hb_config.consumer_token),
-                client_secret=unicode(hb_config.consumer_secret),
-                resource_owner_key=unicode(hb_config.access_token),
-                resource_owner_secret=unicode(hb_config.access_secret))
+        self.api_url = config_reader.get("apiurl")
+        self.user_agent = config_reader.get("oauth_user_agent")
+        self.auth1 = OAuth1(unicode(config_reader.get("consumer_token")),
+                client_secret=unicode(config_reader.get("consumer_secret")),
+                resource_owner_key=unicode(config_reader.get("access_token")),
+                resource_owner_secret=unicode(config_reader.get("access_secret")))
 
     def getToken(self):
         """
@@ -146,7 +148,7 @@ class Profiles:
 
         # NOTE: This function is no longer used for inviting, but is
         # still used elswhere.
-        message = hb_config.message.format(**val).encode('utf-8')
+        message = config_reader.get("message").format(**val).encode('utf-8')
         return message
 
     def publishProfile(self):

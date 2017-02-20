@@ -17,7 +17,7 @@
 
 import logging
 
-import hb_config
+import config_reader
 
 class Query:
     """Queries for database tracking tables."""
@@ -57,8 +57,8 @@ AND user_name not in (
         DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y%m%d%H%i%s'))
 """.format(table=self.invitee_table,
            wikidb=self.wikidb,
-           max_user_age=hb_config.max_user_age,
-           min_edits=hb_config.min_edits)
+           max_user_age=config_reader.get("max_user_age"),
+           min_edits=config_reader.get("min_edits"))
         self.mysql_queries['teahouse experiment newbies'] = query
 
     def make_th_add_talkpage(self):

@@ -25,14 +25,14 @@ import requests
 import requests.packages.urllib3
 
 import hb_output_settings
-import hb_config
+import config_reader
 
 requests.packages.urllib3.disable_warnings()
 
 class Eligible:
 
     def __init__(self):
-        self.api_url = hb_config.apiurl
+        self.api_url = config_reader.get("apiurl")
 
     def getLatestEditDate(self, user_name):
         """
@@ -135,7 +135,7 @@ class Eligible:
             has_skip_string = self.checkTalkPage(
                 talkpage_path,
                 invitee["talkpage_id"],
-                hb_config.skip_strings
+                config_reader.get("skip_strings")
             )
             if has_skip_string:
                 logging.info(
@@ -147,7 +147,7 @@ class Eligible:
             has_skip_template = self.checkTalkPage(
                 talkpage_path,
                 invitee["talkpage_id"],
-                hb_config.skip_templates,
+                config_reader.get("skip_templates"),
                 u"{{{{\s*{}\s*[}}|]"
             )
             if has_skip_template:

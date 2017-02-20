@@ -17,9 +17,9 @@
 
 import datetime
 import MySQLdb
-import hb_config
+import config_reader
 
-conn = MySQLdb.connect(host = hb_config.host, db = hb_config.dbname, read_default_file = hb_config.defaultcnf, use_unicode=1, charset="utf8")
+conn = MySQLdb.connect(host = config_reader.get("host"), db = config_reader.get("dbname"), read_default_file = config_reader.get("defaultcnf"), use_unicode=1, charset="utf8")
 cursor = conn.cursor()
 
 #gets all questions within past 2 weeks

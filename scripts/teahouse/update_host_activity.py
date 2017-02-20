@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import MySQLdb
-import hb_config
+import config_reader
 from warnings import filterwarnings
 
 ###FUNCTIONS###
@@ -60,7 +60,7 @@ UPDATE  th_up_hosts a LEFT JOIN (SELECT  rev_user_text, MAX(rev_timestamp) Lates
 	conn.commit()							
 
 ###MAIN###
-conn = MySQLdb.connect(host = hb_config.host, db = hb_config.dbname, read_default_file = hb_config.defaultcnf, use_unicode=True, charset="utf8")
+conn = MySQLdb.connect(host = config_reader.get("host"), db = config_reader.get("dbname"), read_default_file = config_reader.get("defaultcnf"), use_unicode=True, charset="utf8")
 cursor = conn.cursor()
 filterwarnings('ignore', category = MySQLdb.Warning)
 updateProfiles()

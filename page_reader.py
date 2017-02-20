@@ -19,7 +19,7 @@ import logging
 
 import requests
 
-import hb_config
+import config_reader
 
 cache = {
     'pages': {},
@@ -82,11 +82,11 @@ def _send_api_request(parameters, url=None):
     """Send a GET request to the API and return the response."""
 
     if url is None:
-        url = hb_config.apiurl
+        url = config_reader.get("apiurl")
     response = requests.get(
         url,
         parameters,
-        headers={'User-Agent': hb_config.oauth_user_agent},
+        headers={'User-Agent': config_reader.get("oauth_user_agent")},
     ).json()
     return response
 

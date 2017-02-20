@@ -27,7 +27,7 @@ import hb_toolkit
 import hb_output_settings
 import hb_profiles
 import page_reader
-import hb_config
+import config_reader
 
 def send_invitations():
     elig_check = hb_toolkit.Eligible()
@@ -45,19 +45,26 @@ def send_invitations():
     if len(candidates) > 150:
         candidates = random.sample(candidates, 150) #pull 150 users out randomly
 #     inviters = params['inviters'] #for TWA
-    if hb_config.inviters and "{inviter:s}" not in hb_config.message:
+    if config_reader.get("inviters") and \
+       "{inviter:s}" not in config_reader.get("message"):
         logging.warning(
             "Inviters specified ({}), but no inviter field in message ('{}')."
-                .format(hb_config.inviters, hb_config.message)
+                .format(
+                    config_reader.get("inviters"),
+                    config_reader.get("message")
+                )
         )
         inviters = None
-    elif not hb_config.inviters and "{inviter:s}" in hb_config.message:
-        raise Exception("Inviter field in message ('{}'), but no inviters specified.".format(hb_config.message))
+    elif not config_reader.get("inviters") and \
+         "{inviter:s}" in config_reader.get("message"):
+        raise Exception("Inviter field in message ('{}'), but no inviters specified.".format(config_reader.get("message")))
     else:
         # Only make eligible inviter list if there is a list of
         # inviters to choose from *and* the message contain inviter
         # field.
-        inviters = getEligibleInviters(elig_check, hb_config.inviters)
+        inviters = getEligibleInviters(
+            elig_check, config_reader.get("inviters")
+        )
     invitees = getEligibleInvitees(elig_check, candidates)
 
     logging.debug("Invitees ({}): {}".format(len(invitees), invitees))
@@ -107,11 +114,11 @@ def inviteGuests(prof, inviter):
     Invites todays newcomers.
     """
     if inviter:
-        prof.invite = hb_config.message.format(inviter=inviter).encode('utf-8')
+        prof.invite = config_reader.get("message").format(inviter=inviter).encode('utf-8')
     else:
         # Calling format even if there is no inviter field, to always
         # have the same amount of curly brackets in the message.
-        prof.invite = hb_config.message.format().encode('utf-8')
+        prof.invite = config_reader.get("message").format().encode('utf-8')
     prof.getToken()
     prof.publishProfile()
     return prof
@@ -123,12 +130,20 @@ if __name__ == "__main__":
         "-l",
         help="Path to where the log file will be created."
     )
+    parser.add_argument(
+        "--config-file",
+        "-c",
+        help='Path to config file. Default is "hb_config.py".',
+        default="hb_config.py"
+    )
     args = parser.parse_args()
     logging.basicConfig(
         filename=args.log_path,
         format="%(asctime)s - %(levelname)s - %(message)s",
         level=logging.DEBUG
     )
+    logging.info("Reading configuration file: '{}'.".format(args.config_file))
+    config_reader.load_config_module(args.config_file)
     try:
         send_invitations()
     except:
