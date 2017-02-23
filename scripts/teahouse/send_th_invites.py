@@ -88,7 +88,7 @@ def send_invitations():
         time_delta = time.time() - invitation_time
         # Sleep so that the delay between invitations is at least the
         # time specified in the config.
-        time.sleep(max(0, hb_config.invitation_delay - time_delta))
+        time.sleep(max(0, config_reader.get("invitation_delay") - time_delta))
     for s in skipped_editors:
         daily_sample.updateOneRow("update th invite status", [0, 1, s[1]])
 
@@ -152,9 +152,11 @@ if __name__ == "__main__":
         format="%(asctime)s - %(levelname)s - %(message)s",
         level=logging.DEBUG
     )
-    logging.info("Reading configuration file: '{}'.".format(args.config_file))
-    config_reader.load_config_module(args.config_file)
     try:
+        logging.info("Reading configuration file: '{}'.".format(
+            args.config_file)
+        )
+        config_reader.load_config_module(args.config_file)
         send_invitations()
     except:
         logging.exception("Failed sending invitations:")

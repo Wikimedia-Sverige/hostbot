@@ -37,8 +37,12 @@ invitation_parameters_page = "User:HostbotBot/Invitation parameters"
 max_user_age = 2
 
 # The minimum number of edits that a user must have made to qualify
-# for invitation.
-min_edits = page_reader.read_json_value(
+# for invitation. Note that the syntax for using the return value of a
+# function is a tuple, where the first item is the function and the
+# following items are the arguments. Keyword arguments are not
+# allowed.
+min_edits = (
+    page_reader.read_json_value,
     invitation_parameters_page,
     "min_edits"
 )

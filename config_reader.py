@@ -25,4 +25,13 @@ def get(variable):
         raise Exception(
             "Variable '{}' not found in config file.".format(variable)
         )
+    value = getattr(config, variable)
+    # If the value is a tuple where the first item is a function, call
+    # the function with the remaining items as arguments. The value is
+    # set to the return value, so that the function doesn't need to be
+    # called if the variable is read again.
+    if isinstance(value, tuple) and callable(value[0]):
+        function = value[0]
+        arguments = value[1:]
+        setattr(config, variable, function(*arguments))
     return getattr(config, variable)
